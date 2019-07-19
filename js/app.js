@@ -58,7 +58,7 @@ function Interfaz(){
 }
 
 // mensaje de error
-Interfaz.prototype.mostrarError = function(mensaje, tipo){
+Interfaz.prototype.mostrarMensaje = function(mensaje, tipo){
 
     const div = document.createElement('div');
 
@@ -76,6 +76,46 @@ Interfaz.prototype.mostrarError = function(mensaje, tipo){
     }, 3000);
 }
 
+
+// imprime resultado de cotizacion
+Interfaz.prototype.mostrarResultado = function(seguro, total){
+
+    const resultado = document.getElementById('resultado');
+    let marca;
+
+    switch(seguro.marca){
+
+        case '1': marca = 'Americano';
+        break;
+
+        case '2': marca = 'Asiatico';
+        break;
+
+        case '3': marca = 'Europeo';
+        break;
+    }
+
+    // crear div
+    const div = document.createElement('div');
+    div.innerHTML = `
+                        <p class="header">Tu resumen: </p>
+                        <p>Marca: ${marca} </p>
+                        <p>Año: ${seguro.anio} </p>
+                        <p>Tipo: ${seguro.tipo} </p>
+                        <p>Total: $ ${total} </p>
+        `;
+
+    const spinner = document.querySelector('#cargando img');
+    spinner.style.display = 'block';
+
+    setTimeout(function(){
+
+        spinner.style.display = 'none';
+        resultado.appendChild(div);
+
+    }, 3000)
+
+}
 
 // event listener
 const formulario = document.getElementById('cotizar-seguro');
@@ -102,15 +142,27 @@ formulario.addEventListener('submit', function (e){
     if(marcaSeleccionada === '' || anioSelecionado === '' || tipo === ''){
 
         // imprimir error
-        interfaz.mostrarError('Faltan datos, revisar el formulario y enviar de nuevo', 'error');
+        interfaz.mostrarMensaje('Faltan datos, revisar el formulario y enviar de nuevo', 'error');
 
     }else{
+
+        // limpiar resultador anteriores
+        resultados = document.querySelector('#resultado div');
+
+        if(resultados !== null){
+
+            resultados.remove();
+        }
         
         // instanciar el seguro
         const seguro = new Seguro(marcaSeleccionada, anioSelecionado, tipo);
         
         // cotizar el seguro
         const cantidad = seguro.cotizarSeguro(seguro);
+
+        // mostrar el resultado
+        interfaz.mostrarResultado(seguro, cantidad);
+        interfaz.mostrarMensaje('Cotizando...', 'exito');
     }
 
 });
@@ -129,4 +181,5 @@ for(let i = max; i >= min; i--){
         option.value = i;
         option.innerHTML = i;
         selectAnios.appendChild(option);
+
 }
